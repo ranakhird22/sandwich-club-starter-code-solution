@@ -1,19 +1,33 @@
 package com.udacity.sandwichclub;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
 
+import org.json.JSONException;
+
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
+
+    TextView origin_tv=findViewById(R.id.origin_tv);
+
+    TextView description_tv=findViewById(R.id.description_tv);
+
+    TextView also_known_tv=findViewById(R.id.also_known_tv);
+    TextView ingredients_tv=findViewById(R.id.ingredients_tv);
+
+    //TextView ingredients_tv=findViewById(R.id.);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +49,25 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
+
         String json = sandwiches[position];
-        Sandwich sandwich = JsonUtils.parseSandwichJson(json);
+        Sandwich sandwich = null;
+
+        try {
+            sandwich = JsonUtils.parseSandwichJson(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         if (sandwich == null) {
+
             // Sandwich data unavailable
+
             closeOnError();
             return;
         }
 
-        populateUI();
+        populateUI(sandwich);
         Picasso.with(this)
                 .load(sandwich.getImage())
                 .into(ingredientsIv);
@@ -56,7 +80,39 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-    private void populateUI() {
+    private void populateUI(Sandwich sandwich) {
+        origin_tv.setText(sandwich.getPlaceOfOrigin());
+        description_tv.setText(sandwich.getDescription());
+        also_known_tv.setText(sandwich.getAlsoKnownAs().toString());
+        ingredients_tv.setText(sandwich.getIngredients().toString());
+
+        sandwich.getMainName();
+    }
+/*
+    class MyAsyncTask extends AsyncTask<Void, Void, Sandwich> {
+
+        @Override
+        protected Sandwich doInBackground(Void... Void) {
+
+
+            //Intent intent = getIntent();
+            //  String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
+            // int position = intent.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION);
+            // String json = sandwiches[position];
+
+            try {
+                return parseSandwichJson(json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+
+
+    }*/
+
 
     }
-}
+//}
